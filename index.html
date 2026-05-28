@@ -74,10 +74,47 @@
 
     .nav-links a:hover { opacity: 0.7; }
 
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 101;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #f3fadc;
+      transition: 0.3s;
+    }
+
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
     @media (max-width: 640px) {
-      .nav-links { gap: 0.8rem; }
+      .hamburger { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: #095d40;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.3s;
+        z-index: 100;
+      }
+      .nav-links.open { right: 0; }
       nav { padding: 0 1.2rem; height: 56px; }
-      .nav-links a { font-size: 0.7rem; letter-spacing: 0.08em; }
       .nav-logo { font-size: 1rem; }
     }
 
@@ -347,7 +384,10 @@
 
   <nav>
     <div class="nav-logo">Rutam Oils</div>
-    <ul class="nav-links">
+    <button class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="#about">About</a></li>
       <li><a href="#products">Products</a></li>
       <li><a href="#process">Process</a></li>
@@ -521,8 +561,17 @@
       a.addEventListener('click', e => {
         e.preventDefault();
         const target = document.querySelector(a.getAttribute('href'));
-        if (target) lenis.scrollTo(target, { offset: -64 });
+        if (target) {
+          lenis.scrollTo(target, { offset: -64 });
+          document.getElementById('navLinks').classList.remove('open');
+          document.getElementById('hamburger').classList.remove('active');
+        }
       });
+    });
+
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+      document.getElementById('hamburger').classList.toggle('active');
     });
   </script>
 </body>
