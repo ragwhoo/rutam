@@ -133,8 +133,9 @@
         background: url('rutamheromobile.png') center center / cover no-repeat;
       }
       .purity-section {
-        background: url('puritymoobile.png') center center / cover no-repeat;
-        height: 60vh;
+        background: url('puritymoobile.png') center center / contain no-repeat;
+        height: auto;
+        min-height: 60vh;
       }
     }
 
@@ -548,6 +549,7 @@
     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), wheelMultiplier: 1 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
+    requestAnimationFrame(() => updateNav());
 
     const navTextItems = document.querySelectorAll('.nav-logo, .nav-links a');
     const hamSpans = document.querySelectorAll('.hamburger span');
@@ -557,7 +559,7 @@
       hamSpans.forEach(s => s.style.background = cream ? '#f3fadc' : '#095d40');
     }
     lenis.on('scroll', updateNav);
-    updateNav();
+    requestAnimationFrame(() => updateNav());
 
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
@@ -573,10 +575,15 @@
     });
 
     document.getElementById('hamburger').addEventListener('click', () => {
-      const open = document.getElementById('navLinks').classList.toggle('open');
+      const wasClosed = !document.getElementById('navLinks').classList.contains('open');
+      document.getElementById('navLinks').classList.toggle('open');
       document.getElementById('hamburger').classList.toggle('active');
-      document.querySelectorAll('.nav-links a').forEach(a => a.style.color = '#f3fadc');
-      document.querySelectorAll('.hamburger span').forEach(s => s.style.background = '#f3fadc');
+      if (wasClosed) {
+        document.querySelectorAll('.nav-links a').forEach(a => a.style.color = '#f3fadc');
+        document.querySelectorAll('.hamburger span').forEach(s => s.style.background = '#f3fadc');
+      } else {
+        updateNav();
+      }
     });
   </script>
 </body>
