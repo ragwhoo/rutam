@@ -1,9 +1,0 @@
-{
-    "port":  0,
-    "host":  "127.0.0.1",
-    "screen_dir":  "C:\\Users\\raghu\\Desktop\\rutam\\.superpowers\\brainstorm\\912580697-1779990927\\content",
-    "url_host":  "localhost",
-    "type":  "server-started",
-    "state_dir":  "C:\\Users\\raghu\\Desktop\\rutam\\.superpowers\\brainstorm\\912580697-1779990927\\state",
-    "url":  "http://localhost:PORT"
-}
