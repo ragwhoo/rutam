@@ -3,7 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rutam Oils</title>
+  <title>Rutam Oils — Cold Wood-Pressed Oils | Sri Krishna Enterprises</title>
+  <meta name="description" content="RUTAM Wood-Pressed Oils by Sri Krishna Enterprises — FSSAI certified cold wood-pressed edible oils made using traditional Marachekku machines. 100% pure, unbleached, unrefined.">
+  <meta name="keywords" content="wood pressed oil, cold pressed oil, marachekku oil, coconut oil, groundnut oil, sesame oil, mustard oil, flaxseed oil, safflower oil, sunflower oil, virgin coconut oil, Karnataka traditional oil">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="/">
+  <meta property="og:title" content="Rutam Oils — Cold Wood-Pressed Oils">
+  <meta property="og:description" content="FSSAI certified cold wood-pressed edible oils made using traditional Marachekku machines. 100% pure, unbleached, unrefined.">
+  <meta property="og:image" content="rutamhero.png">
+  <meta property="og:url" content="/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rutam Oils — Cold Wood-Pressed Oils">
+  <meta name="twitter:description" content="FSSAI certified cold wood-pressed edible oils made using traditional Marachekku machines.">
+  <meta name="twitter:image" content="rutamhero.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -396,9 +410,9 @@
 </head>
 <body>
 
-  <nav>
+  <nav aria-label="Main navigation">
     <div class="nav-logo">Rutam Oils</div>
-    <button class="hamburger" id="hamburger">
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="navLinks">
@@ -411,6 +425,9 @@
   </nav>
 
   <section class="hero">
+    <div style="height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;background:rgba(0,0,0,0.25);">
+      <h1 style="font-size:clamp(2.8rem,7vw,5rem);font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#f3fadc;max-width:900px;line-height:1.2;">RUTAM<br><span style="font-weight:400;font-size:clamp(1rem,2.5vw,1.5rem);letter-spacing:0.3em;display:block;margin-top:1rem;">Cold Wood-Pressed Oils</span></h1>
+    </div>
   </section>
 
   <section id="about">
@@ -581,7 +598,32 @@
     <p style="margin-top:0.5rem;">&copy; 2026 Sri Krishna Enterprises. All rights reserved.</p>
   </footer>
 
-  <script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Sri Krishna Enterprises",
+      "brand": "RUTAM Oils",
+      "description": "FSSAI certified manufacturer of cold wood-pressed edible oils using traditional Marachekku machines.",
+      "url": "/",
+      "logo": "rutamhero.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-9481548382",
+        "email": "rutamoils@gmail.com",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Kannada"]
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://www.instagram.com/rutamoils"
+      ]
+    }
+    </script>
+    <script>
     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), wheelMultiplier: 1 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
