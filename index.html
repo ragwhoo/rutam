@@ -378,6 +378,20 @@
       .benefits-grid { gap: 1.5rem; }
       .benefit-item { padding: 1.5rem 1rem; }
     }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .gallery-video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      background: rgba(243, 250, 220, 0.05);
+    }
   </style>
 </head>
 <body>
@@ -391,6 +405,7 @@
       <li><a href="#about">About</a></li>
       <li><a href="#products">Products</a></li>
       <li><a href="#process">Process</a></li>
+      <li><a href="#gallery">Gallery</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
@@ -490,6 +505,18 @@
         <div class="about-image">
           <img src="marachekku.jfif" alt="Marachekku Machine" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="container">
+      <h2 class="section-title">Gallery</h2>
+      <p class="section-subtitle">Watch the traditional wood-pressing process in action</p>
+      <div class="gallery-grid">
+        <video class="gallery-video" src="bettervideo.mp4" autoplay muted loop playsinline></video>
+        <video class="gallery-video" src="videos.mp4" autoplay muted loop playsinline></video>
+        <video class="gallery-video" src="machine video.mp4" autoplay muted loop playsinline></video>
       </div>
     </div>
   </section>
