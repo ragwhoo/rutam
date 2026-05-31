@@ -705,21 +705,29 @@
     const carouselCards = carouselInner.querySelectorAll(".carousel-card");
     let carouselProgress = 0;
     let smoothCarouselP = 0;
+    let carouselActive = false;
 
-    carousel3d.addEventListener("wheel", (e) => {
-      if (e.target.closest(".carousel-card")) {
+    carousel3d.addEventListener("mouseenter", () => { carouselActive = true; });
+    carousel3d.addEventListener("mouseleave", () => { carouselActive = false; });
+
+    document.addEventListener("wheel", (e) => {
+      if (carouselActive) {
         e.preventDefault();
         carouselProgress += e.deltaY * 0.003;
       }
     }, { passive: false });
 
     let cTouchStart = 0;
-    carousel3d.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; }, { passive: true });
-    carousel3d.addEventListener("touchmove", (e) => {
-      const dy = cTouchStart - e.touches[0].clientY;
-      carouselProgress += dy * 0.005;
-      cTouchStart = e.touches[0].clientY;
-    }, { passive: true });
+    carousel3d.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; carouselActive = true; }, { passive: true });
+    document.addEventListener("touchend", () => { carouselActive = false; }, { passive: true });
+    document.addEventListener("touchmove", (e) => {
+      if (carouselActive) {
+        e.preventDefault();
+        const dy = cTouchStart - e.touches[0].clientY;
+        carouselProgress += dy * 0.005;
+        cTouchStart = e.touches[0].clientY;
+      }
+    }, { passive: false });
 
     function lerp(a, b, t) { return a + (b - a) * t; }
 
