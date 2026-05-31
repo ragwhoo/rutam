@@ -406,6 +406,86 @@
       display: block;
       background: rgba(243, 250, 220, 0.05);
     }
+
+    .carousel-3d {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      overflow: hidden;
+      perspective: 3000px;
+      cursor: grab;
+    }
+
+    .carousel-inner {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      transform: rotateY(-14deg) rotateX(-6deg);
+    }
+
+    .carousel-card {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform-style: preserve-3d;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .carousel-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .carousel-card .card-label {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.3);
+      font-weight: 300;
+    }
+
+    .carousel-title {
+      position: absolute;
+      top: 6%;
+      left: 3%;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 200;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      color: #f3fadc;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .carousel-title span {
+      display: block;
+      font-size: clamp(0.8rem, 1.4vw, 1rem);
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      margin-top: 1rem;
+      opacity: 0.7;
+    }
+
+    .carousel-hint {
+      position: absolute;
+      bottom: 6%;
+      right: 3%;
+      font-size: clamp(8px, 0.8vw, 11px);
+      letter-spacing: 0.3em;
+      color: rgba(243, 250, 220, 0.15);
+      z-index: 10;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -511,10 +591,9 @@
     <div class="container">
       <h2 class="section-title">Gallery</h2>
       <p class="section-subtitle">Watch the traditional wood-pressing process in action</p>
-      <div class="gallery-grid">
-        <video class="gallery-video" src="bettervideo.mp4" autoplay muted loop playsinline></video>
-        <video class="gallery-video" src="videos.mp4" autoplay muted loop playsinline></video>
-        <video class="gallery-video" src="machine video.mp4" autoplay muted loop playsinline></video>
+      <div class="carousel-3d" id="carousel3d">
+        <div class="carousel-inner" id="carouselInner"></div>
+        <div class="carousel-hint">SCROLL TO EXPLORE</div>
       </div>
     </div>
   </section>
@@ -604,7 +683,76 @@
       ]
     }
     </script>
-    <script>
+  <script>
+    const carouselVideos = [
+      "bestvideosofar.mp4", "bettervideo.mp4", "video1.mp4", "video2.mp4",
+      "video3.mp4", "video4.mp4", "machine video.mp4", "videos.mp4"
+    ];
+    const CN = carouselVideos.length;
+    const CS = 0.8;
+    const CSP = 200;
+
+    const carouselInner = document.getElementById("carouselInner");
+    const carousel3d = document.getElementById("carousel3d");
+
+    carouselVideos.forEach((src, i) => {
+      const card = document.createElement("div");
+      card.className = "carousel-card";
+      card.innerHTML = `<video src="${src}" autoplay muted loop playsinline></video><div class="card-label">${String(i).padStart(2,"0")}</div>`;
+      carouselInner.appendChild(card);
+    });
+
+    const carouselCards = carouselInner.querySelectorAll(".carousel-card");
+    let carouselProgress = 0;
+    let smoothCarouselP = 0;
+
+    carousel3d.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      carouselProgress += e.deltaY * 0.003;
+    }, { passive: false });
+
+    let cTouchStart = 0;
+    carousel3d.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; }, { passive: true });
+    carousel3d.addEventListener("touchmove", (e) => {
+      const dy = cTouchStart - e.touches[0].clientY;
+      carouselProgress += dy * 0.005;
+      cTouchStart = e.touches[0].clientY;
+    }, { passive: true });
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function updateCarousel(p) {
+      carouselCards.forEach((card, i) => {
+        const raw = i - p * CS;
+        const w = ((raw % CN) + CN) % CN;
+        const c = w > CN / 2 ? w - CN : w;
+
+        const x = c * CSP;
+        const y = c * -150;
+        const z = c * -150;
+        const scale = Math.max(0.35, 1.6 - Math.abs(c) * 0.18);
+        const rotY = -18 + c * 2;
+        const cardW = 140 + (c + 8) * 8;
+        const cardH = 200 + (c + 8) * 10;
+        const dist = Math.abs(z);
+        const blurVal = Math.min(3, dist * 0.0004);
+        const opacity = Math.max(0.12, 1 - dist * 0.0004);
+
+        card.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) translateZ(${z}px) scale(${scale}) rotateY(${rotY}deg) rotateX(-4deg)`;
+        card.style.width = cardW + "px";
+        card.style.height = cardH + "px";
+        card.style.opacity = opacity;
+        card.style.filter = `blur(${blurVal}px)`;
+      });
+    }
+
+    function carouselAnim() {
+      smoothCarouselP = lerp(smoothCarouselP, carouselProgress, 0.08);
+      updateCarousel(smoothCarouselP);
+      requestAnimationFrame(carouselAnim);
+    }
+    carouselAnim();
+
     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), wheelMultiplier: 1 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
