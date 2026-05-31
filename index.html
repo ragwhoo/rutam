@@ -413,10 +413,10 @@
     }
 
     .carousel3d-card {
-      flex: 0 0 100%;
+      flex: 0 0 auto;
+      width: 400px;
       height: 100%;
-      padding: 0 10px;
-      box-sizing: border-box;
+      margin-right: 20px;
       border-radius: 8px;
       overflow: hidden;
     }
@@ -427,6 +427,10 @@
       object-fit: cover;
       display: block;
       border-radius: 8px;
+    }
+
+    @media (max-width: 640px) {
+      .carousel3d-card { width: 240px; margin-right: 12px; }
     }
 
     .carousel3d-controls {
@@ -691,14 +695,21 @@
 
     carouselCounter.textContent = `1 / ${CA}`;
 
+    const carouselStage = document.getElementById("carouselStage");
+
     function renderCarousel(animate) {
       const track = carouselTrack;
+      const first = track.children[0];
+      if (!first) return;
+      const gap = parseFloat(getComputedStyle(first).marginRight) || 20;
+      const cw = first.offsetWidth + gap;
+      const offset = (carouselStage.offsetWidth - cw) / 2 - carouselIndex * cw;
       if (animate) {
         track.style.transition = "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)";
       } else {
         track.style.transition = "none";
       }
-      track.style.transform = `translateX(-${carouselIndex * 100}%)`;
+      track.style.transform = `translateX(${offset}px)`;
     }
 
     renderCarousel(false);
