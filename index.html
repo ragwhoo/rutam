@@ -407,81 +407,54 @@
       background: rgba(243, 250, 220, 0.05);
     }
 
-    .carousel-3d {
+    .cascade {
+      text-align: center;
+    }
+
+    .cascade-stack {
       position: relative;
       width: 100%;
-      height: 500px;
-      overflow: hidden;
-      perspective: 3000px;
-      cursor: grab;
+      max-width: 560px;
+      height: 380px;
+      margin: 0 auto 2rem;
     }
 
-    .carousel-inner {
+    .cascade-card {
       position: absolute;
-      inset: 0;
-      perspective: 3000px;
-      transform-style: preserve-3d;
-      transform: rotateY(-14deg) rotateX(-6deg);
-    }
-
-    .carousel-card {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform-style: preserve-3d;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
       overflow: hidden;
-      border-radius: 4px;
+      transition: transform 0.5s, opacity 0.5s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
 
-    .carousel-card video {
+    .cascade-card video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .carousel-card .card-label {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 10px;
+
+
+    .cascade-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .cascade-btn {
+      padding: 0.7rem 2rem !important;
+      font-size: 0.8rem !important;
+    }
+
+    .cascade-counter {
+      font-size: 0.9rem;
+      font-weight: 300;
       letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.3);
-      font-weight: 300;
-    }
-
-    .carousel-title {
-      position: absolute;
-      top: 6%;
-      left: 3%;
-      font-size: clamp(3rem, 8vw, 5.5rem);
-      font-weight: 200;
-      line-height: 0.9;
-      letter-spacing: -0.02em;
-      color: #f3fadc;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    .carousel-title span {
-      display: block;
-      font-size: clamp(0.8rem, 1.4vw, 1rem);
-      font-weight: 300;
-      letter-spacing: 0.3em;
-      margin-top: 1rem;
       opacity: 0.7;
-    }
-
-    .carousel-hint {
-      position: absolute;
-      bottom: 6%;
-      right: 3%;
-      font-size: clamp(8px, 0.8vw, 11px);
-      letter-spacing: 0.3em;
-      color: rgba(243, 250, 220, 0.15);
-      z-index: 10;
-      pointer-events: none;
     }
   </style>
 </head>
@@ -588,9 +561,13 @@
     <div class="container">
       <h2 class="section-title">Gallery</h2>
       <p class="section-subtitle">Watch the traditional wood-pressing process in action</p>
-      <div class="carousel-3d" id="carousel3d">
-        <div class="carousel-inner" id="carouselInner"></div>
-        <div class="carousel-hint">SCROLL TO EXPLORE</div>
+      <div class="cascade" id="cascade">
+        <div class="cascade-stack" id="cascadeStack"></div>
+        <div class="cascade-controls">
+          <button class="btn cascade-btn" id="cascadePrev">Prev</button>
+          <span class="cascade-counter" id="cascadeCounter">1 / 8</span>
+          <button class="btn cascade-btn" id="cascadeNext">Next</button>
+        </div>
       </div>
     </div>
   </section>
@@ -681,85 +658,49 @@
     }
     </script>
   <script>
-    const carouselVideos = [
+    const cascadeVideos = [
       "bestvideosofar.mp4", "bettervideo.mp4", "video1.mp4", "video2.mp4",
       "video3.mp4", "video4.mp4", "machine video.mp4", "videos.mp4"
     ];
-    const CN = carouselVideos.length;
-    const CS = 0.8;
-    const CSP = 250;
+    const CV = cascadeVideos.length;
+    let cascadeIndex = 0;
 
-    const carouselInner = document.getElementById("carouselInner");
-    const carousel3d = document.getElementById("carousel3d");
+    const cascadeStack = document.getElementById("cascadeStack");
+    const cascadeCounter = document.getElementById("cascadeCounter");
 
-    const carouselCards = [];
-    let carouselProgress = 0;
-    let smoothCarouselP = 0;
-    let cTouchStart = 0;
-
-    carouselVideos.forEach((src, i) => {
+    cascadeVideos.forEach((src, i) => {
       const card = document.createElement("div");
-      card.className = "carousel-card";
-      card.innerHTML = `<video src="${src}" autoplay muted loop playsinline preload="auto"></video><div class="card-label">${String(i).padStart(2,"0")}</div>`;
-      carouselInner.appendChild(card);
-      carouselCards.push(card);
-      const vid = card.querySelector("video");
-      vid.load();
-      vid.muted = true;
-      vid.playsInline = true;
-      vid.play().catch(() => {});
-
-      card.addEventListener("mouseenter", () => { lenis.stop(); });
-      card.addEventListener("mouseleave", () => { lenis.start(); });
-      card.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        carouselProgress += e.deltaY * 0.003;
-      }, { passive: false });
-      card.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; lenis.stop(); }, { passive: true });
-      card.addEventListener("touchend", () => { lenis.start(); }, { passive: true });
-      card.addEventListener("touchmove", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const dy = cTouchStart - e.touches[0].clientY;
-        carouselProgress += dy * 0.005;
-        cTouchStart = e.touches[0].clientY;
-      }, { passive: false });
+      card.className = "cascade-card";
+      card.innerHTML = `<video src="${src}" autoplay muted loop playsinline preload="auto"></video>`;
+      cascadeStack.appendChild(card);
+      card.querySelector("video").load();
     });
 
-    function lerp(a, b, t) { return a + (b - a) * t; }
+    cascadeCounter.textContent = `1 / ${CV}`;
 
-    function updateCarousel(p) {
-      carouselCards.forEach((card, i) => {
-        const raw = i - p * CS;
-        const w = ((raw % CN) + CN) % CN;
-        const c = w > CN / 2 ? w - CN : w;
-
-        const x = c * CSP;
-        const y = c * -150;
-        const z = c * -150;
-        const scale = Math.max(0.35, 1.6 - Math.abs(c) * 0.18);
-        const rotY = -18 + c * 2;
-        const cardW = 260 + (c + 8) * 8;
-        const cardH = 180 + (c + 8) * 6;
-        const dist = Math.abs(z);
-        const blurVal = Math.min(3, dist * 0.0004);
-        const opacity = Math.max(0.12, 1 - dist * 0.0004);
-
-        card.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) translateZ(${z}px) scale(${scale}) rotateY(${rotY}deg) rotateX(-4deg)`;
-        card.style.width = cardW + "px";
-        card.style.height = cardH + "px";
-        card.style.opacity = opacity;
-        card.style.filter = `blur(${blurVal}px)`;
-      });
+    function renderCascade() {
+      const cards = cascadeStack.children;
+      for (let i = 0; i < cards.length; i++) {
+        const offset = ((i - cascadeIndex + CV) % CV);
+        cards[i].style.zIndex = CV - offset;
+        cards[i].style.transform = `translate(${offset * 12}px, ${offset * -8}px) scale(${Math.max(0, 1 - offset * 0.08)})`;
+        cards[i].style.opacity = offset < 4 ? Math.max(0.25, 1 - offset * 0.2) : "0";
+        cards[i].style.pointerEvents = offset === 0 ? "auto" : "none";
+      }
     }
+    renderCascade();
 
-    function carouselAnim() {
-      smoothCarouselP = lerp(smoothCarouselP, carouselProgress, 0.08);
-      updateCarousel(smoothCarouselP);
-      requestAnimationFrame(carouselAnim);
-    }
-    carouselAnim();
+    document.getElementById("cascadeNext").addEventListener("click", () => {
+      cascadeIndex = (cascadeIndex + 1) % CV;
+      cascadeCounter.textContent = `${cascadeIndex + 1} / ${CV}`;
+      renderCascade();
+    });
+
+    document.getElementById("cascadePrev").addEventListener("click", () => {
+      cascadeIndex = (cascadeIndex - 1 + CV) % CV;
+      cascadeCounter.textContent = `${cascadeIndex + 1} / ${CV}`;
+      renderCascade();
+    });
 
     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), wheelMultiplier: 1 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
