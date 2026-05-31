@@ -407,8 +407,78 @@
       background: rgba(243, 250, 220, 0.05);
     }
 
-    .cascade {
+    .carousel3d {
       text-align: center;
+    }
+
+    .carousel3d-stage {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 460px;
+      margin: 0 auto 2rem;
+      perspective: 1200px;
+    }
+
+    .carousel3d-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s ease;
+    }
+
+    .carousel3d-card video {
+      display: block;
+      width: 500px;
+      height: 320px;
+      object-fit: cover;
+    }
+
+    @media (max-width: 640px) {
+      .carousel3d-card video { width: 300px; height: 200px; }
+    }
+
+    .carousel3d-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .carousel3d-arrow {
+      background: none;
+      border: 2px solid #f3fadc;
+      color: #f3fadc;
+      width: 48px;
+      height: 48px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, color 0.3s;
+      border-radius: 50%;
+    }
+
+    .carousel3d-arrow:hover {
+      background: #f3fadc;
+      color: #095d40;
+    }
+
+    .carousel3d-counter {
+      font-size: 0.95rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      opacity: 0.7;
+      min-width: 60px;
+    }
+
+    @media (max-width: 640px) {
+      .carousel3d-stage { height: 300px; }
+      .carousel3d-arrow { width: 40px; height: 40px; font-size: 1.1rem; }
     }
 
     .cascade-stack {
@@ -561,12 +631,12 @@
     <div class="container">
       <h2 class="section-title">Gallery</h2>
       <p class="section-subtitle">Watch the traditional wood-pressing process in action</p>
-      <div class="cascade" id="cascade">
-        <div class="cascade-stack" id="cascadeStack"></div>
-        <div class="cascade-controls">
-          <button class="btn cascade-btn" id="cascadePrev">Prev</button>
-          <span class="cascade-counter" id="cascadeCounter">1 / 8</span>
-          <button class="btn cascade-btn" id="cascadeNext">Next</button>
+      <div class="carousel3d" id="carousel3d">
+        <div class="carousel3d-stage" id="carouselStage"></div>
+        <div class="carousel3d-controls">
+          <button class="carousel3d-arrow" id="carouselPrev">&#10094;</button>
+          <span class="carousel3d-counter" id="carouselCounter">1 / 8</span>
+          <button class="carousel3d-arrow" id="carouselNext">&#10095;</button>
         </div>
       </div>
     </div>
@@ -658,59 +728,84 @@
     }
     </script>
   <script>
-    const cascadeVideos = [
+    const carouselVideos = [
       "bestvideosofar.mp4", "bettervideo.mp4", "video1.mp4", "video2.mp4",
       "video3.mp4", "video4.mp4", "machine video.mp4", "videos.mp4"
     ];
-    const CV = cascadeVideos.length;
-    let cascadeIndex = 0;
+    const CA = carouselVideos.length;
+    let carouselIndex = 0;
 
-    const cascadeStack = document.getElementById("cascadeStack");
-    const cascadeCounter = document.getElementById("cascadeCounter");
+    const carouselStage = document.getElementById("carouselStage");
+    const carouselCounter = document.getElementById("carouselCounter");
 
-    cascadeVideos.forEach((src, i) => {
+    const DEPTH = 250;
+    const SIDE_SCALE = 0.55;
+    const SIDE_ANGLE = 40;
+    const SIDE_OFFSET = 220;
+
+    carouselVideos.forEach((src, i) => {
       const card = document.createElement("div");
-      card.className = "cascade-card";
+      card.className = "carousel3d-card";
       card.innerHTML = `<video src="${src}" autoplay muted loop playsinline preload="auto"></video>`;
-      cascadeStack.appendChild(card);
+      carouselStage.appendChild(card);
       card.querySelector("video").load();
     });
 
-    cascadeCounter.textContent = `1 / ${CV}`;
+    carouselCounter.textContent = `1 / ${CA}`;
 
-    function renderCascade() {
-      const cards = cascadeStack.children;
+    function renderCarousel() {
+      const cards = carouselStage.children;
       for (let i = 0; i < cards.length; i++) {
-        const offset = ((i - cascadeIndex + CV) % CV);
-        if (offset < 4) {
-          const wasHidden = cards[i].style.display === "none";
-          cards[i].style.display = "block";
-          cards[i].style.zIndex = 10 - offset;
-          cards[i].style.transform = `translate(${offset * 14}px, ${offset * -10}px) scale(${1 - offset * 0.08})`;
-          cards[i].style.opacity = 1 - offset * 0.2;
-          cards[i].style.pointerEvents = offset === 0 ? "auto" : "none";
-          const v = cards[i].querySelector("video");
-          if (v) {
-            if (wasHidden) { v.load(); }
-            if (v.paused) { v.play().catch(() => {}); }
-          }
+        const offset = ((i - carouselIndex + CA) % CA);
+        const card = cards[i];
+        const v = card.querySelector("video");
+
+        if (offset === 0) {
+          card.style.transform = `translate(-50%, -50%) translateZ(0) scale(1) rotateY(0deg)`;
+          card.style.opacity = "1";
+          card.style.zIndex = "10";
+          card.style.pointerEvents = "auto";
+          if (v && v.paused) v.play().catch(() => {});
+        } else if (offset === 1) {
+          card.style.transform = `translate(-50%, -50%) translateX(${-SIDE_OFFSET}px) translateZ(${-DEPTH}px) scale(${SIDE_SCALE}) rotateY(${SIDE_ANGLE}deg)`;
+          card.style.opacity = "1";
+          card.style.zIndex = "5";
+          card.style.pointerEvents = "none";
+          if (v) { v.load(); if (v.paused) v.play().catch(() => {}); }
+        } else if (offset === CA - 1) {
+          card.style.transform = `translate(-50%, -50%) translateX(${SIDE_OFFSET}px) translateZ(${-DEPTH}px) scale(${SIDE_SCALE}) rotateY(${-SIDE_ANGLE}deg)`;
+          card.style.opacity = "1";
+          card.style.zIndex = "5";
+          card.style.pointerEvents = "none";
+          if (v) { v.load(); if (v.paused) v.play().catch(() => {}); }
         } else {
-          cards[i].style.display = "none";
+          const side = offset < CA / 2 ? -1 : 1;
+          const dist = (offset < CA / 2 ? offset : CA - offset);
+          const xOff = side * (SIDE_OFFSET + (dist - 1) * 50);
+          const zOff = -DEPTH - (dist - 1) * 100;
+          const s = SIDE_SCALE - (dist - 1) * 0.08;
+          const rot = side * (SIDE_ANGLE + (dist - 1) * 5);
+          card.style.transform = `translate(-50%, -50%) translateX(${xOff}px) translateZ(${zOff}px) scale(${Math.max(0.3, s)}) rotateY(${rot}deg)`;
+          card.style.opacity = Math.max(0, 1 - (dist - 1) * 0.25);
+          card.style.zIndex = 5 - (dist - 1);
+          card.style.pointerEvents = "none";
+          if (v) { v.load(); if (v.paused) v.play().catch(() => {}); }
         }
       }
     }
-    renderCascade();
 
-    document.getElementById("cascadeNext").addEventListener("click", () => {
-      cascadeIndex = (cascadeIndex + 1) % CV;
-      cascadeCounter.textContent = `${cascadeIndex + 1} / ${CV}`;
-      renderCascade();
+    renderCarousel();
+
+    document.getElementById("carouselNext").addEventListener("click", () => {
+      carouselIndex = (carouselIndex + 1) % CA;
+      carouselCounter.textContent = `${carouselIndex + 1} / ${CA}`;
+      renderCarousel();
     });
 
-    document.getElementById("cascadePrev").addEventListener("click", () => {
-      cascadeIndex = (cascadeIndex - 1 + CV) % CV;
-      cascadeCounter.textContent = `${cascadeIndex + 1} / ${CV}`;
-      renderCascade();
+    document.getElementById("carouselPrev").addEventListener("click", () => {
+      carouselIndex = (carouselIndex - 1 + CA) % CA;
+      carouselCounter.textContent = `${carouselIndex + 1} / ${CA}`;
+      renderCarousel();
     });
 
     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), wheelMultiplier: 1 });
