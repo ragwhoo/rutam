@@ -707,8 +707,11 @@
     let smoothCarouselP = 0;
 
     carousel3d.addEventListener("wheel", (e) => {
-      carouselProgress += e.deltaY * 0.003;
-    }, { passive: true });
+      if (e.target.closest(".carousel-card")) {
+        e.preventDefault();
+        carouselProgress += e.deltaY * 0.003;
+      }
+    }, { passive: false });
 
     let cTouchStart = 0;
     carousel3d.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; }, { passive: true });
