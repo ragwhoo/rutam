@@ -409,12 +409,10 @@
     .carousel3d-track {
       display: flex;
       height: 100%;
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .carousel3d-card {
-      flex: 0 0 auto;
-      width: 400px;
+      flex: 0 0 286px;
       height: 100%;
       margin-right: 20px;
       border-radius: 8px;
@@ -430,7 +428,7 @@
     }
 
     @media (max-width: 640px) {
-      .carousel3d-card { width: 240px; margin-right: 12px; }
+      .carousel3d-card { flex: 0 0 180px; margin-right: 12px; }
     }
 
     .carousel3d-controls {
@@ -681,50 +679,55 @@
       "video3.mp4", "video4.mp4", "machine video.mp4", "videos.mp4"
     ];
     const CA = carouselVideos.length;
-    let carouselIndex = 0;
 
+    const carouselStage = document.getElementById("carouselStage");
     const carouselTrack = document.getElementById("carouselTrack");
     const carouselCounter = document.getElementById("carouselCounter");
 
-    carouselVideos.forEach((src, i) => {
+    const clonePre = carouselVideos.slice(-3);
+    const clonePost = carouselVideos.slice(0, 3);
+    [...clonePre, ...carouselVideos, ...clonePost].forEach((src) => {
       const card = document.createElement("div");
       card.className = "carousel3d-card";
       card.innerHTML = `<video src="${src}" autoplay muted loop playsinline preload="auto"></video>`;
       carouselTrack.appendChild(card);
     });
 
+    const REAL0 = 3;
+    const REAL7 = REAL0 + CA - 1;
+    let cur = REAL0;
     carouselCounter.textContent = `1 / ${CA}`;
 
-    const carouselStage = document.getElementById("carouselStage");
-
     function renderCarousel(animate) {
-      const track = carouselTrack;
-      const first = track.children[0];
+      const first = carouselTrack.children[0];
       if (!first) return;
       const gap = parseFloat(getComputedStyle(first).marginRight) || 20;
       const cw = first.offsetWidth + gap;
-      const offset = (carouselStage.offsetWidth - cw) / 2 - carouselIndex * cw;
-      if (animate) {
-        track.style.transition = "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)";
-      } else {
-        track.style.transition = "none";
-      }
-      track.style.transform = `translateX(${offset}px)`;
+      const offset = (carouselStage.offsetWidth - cw) / 2 - cur * cw;
+      carouselTrack.style.transition = animate ? "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      carouselTrack.style.transform = `translateX(${offset}px)`;
     }
 
-    renderCarousel(false);
+    let loopTimer;
 
-    document.getElementById("carouselNext").addEventListener("click", () => {
-      carouselIndex = (carouselIndex + 1) % CA;
-      carouselCounter.textContent = `${carouselIndex + 1} / ${CA}`;
-      renderCarousel(true);
-    });
+    function goTo(idx, animate) {
+      cur = idx;
+      const real = ((cur - REAL0) % CA + CA) % CA;
+      carouselCounter.textContent = `${real + 1} / ${CA}`;
+      renderCarousel(animate);
+      if (animate) {
+        clearTimeout(loopTimer);
+        loopTimer = setTimeout(() => {
+          if (cur > REAL7) { goTo(REAL0, false); }
+          else if (cur < REAL0) { goTo(REAL7, false); }
+        }, 500);
+      }
+    }
 
-    document.getElementById("carouselPrev").addEventListener("click", () => {
-      carouselIndex = (carouselIndex - 1 + CA) % CA;
-      carouselCounter.textContent = `${carouselIndex + 1} / ${CA}`;
-      renderCarousel(true);
-    });
+    goTo(REAL0, false);
+
+    document.getElementById("carouselNext").addEventListener("click", () => goTo(cur + 1, true));
+    document.getElementById("carouselPrev").addEventListener("click", () => goTo(cur - 1, true));
 
     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), wheelMultiplier: 1 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
