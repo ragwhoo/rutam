@@ -683,11 +683,17 @@
       for (let i = 0; i < cards.length; i++) {
         const offset = ((i - cascadeIndex + CV) % CV);
         if (offset < 4) {
+          const wasHidden = cards[i].style.display === "none";
           cards[i].style.display = "block";
           cards[i].style.zIndex = 10 - offset;
           cards[i].style.transform = `translate(${offset * 14}px, ${offset * -10}px) scale(${1 - offset * 0.08})`;
           cards[i].style.opacity = 1 - offset * 0.2;
           cards[i].style.pointerEvents = offset === 0 ? "auto" : "none";
+          const v = cards[i].querySelector("video");
+          if (v) {
+            if (wasHidden) { v.load(); }
+            if (v.paused) { v.play().catch(() => {}); }
+          }
         } else {
           cards[i].style.display = "none";
         }
