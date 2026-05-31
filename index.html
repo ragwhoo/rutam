@@ -695,39 +695,35 @@
     const carouselInner = document.getElementById("carouselInner");
     const carousel3d = document.getElementById("carousel3d");
 
+    const carouselCards = [];
+    let carouselProgress = 0;
+    let smoothCarouselP = 0;
+    let cTouchStart = 0;
+
     carouselVideos.forEach((src, i) => {
       const card = document.createElement("div");
       card.className = "carousel-card";
       card.innerHTML = `<video src="${src}" autoplay muted loop playsinline></video><div class="card-label">${String(i).padStart(2,"0")}</div>`;
       carouselInner.appendChild(card);
-    });
+      carouselCards.push(card);
 
-    const carouselCards = carouselInner.querySelectorAll(".carousel-card");
-    let carouselProgress = 0;
-    let smoothCarouselP = 0;
-    let carouselActive = false;
-
-    carousel3d.addEventListener("mouseenter", () => { carouselActive = true; });
-    carousel3d.addEventListener("mouseleave", () => { carouselActive = false; });
-
-    document.addEventListener("wheel", (e) => {
-      if (carouselActive) {
+      card.addEventListener("mouseenter", () => { lenis.stop(); });
+      card.addEventListener("mouseleave", () => { lenis.start(); });
+      card.addEventListener("wheel", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         carouselProgress += e.deltaY * 0.003;
-      }
-    }, { passive: false });
-
-    let cTouchStart = 0;
-    carousel3d.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; carouselActive = true; }, { passive: true });
-    document.addEventListener("touchend", () => { carouselActive = false; }, { passive: true });
-    document.addEventListener("touchmove", (e) => {
-      if (carouselActive) {
+      }, { passive: false });
+      card.addEventListener("touchstart", (e) => { cTouchStart = e.touches[0].clientY; lenis.stop(); }, { passive: true });
+      card.addEventListener("touchend", () => { lenis.start(); }, { passive: true });
+      card.addEventListener("touchmove", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const dy = cTouchStart - e.touches[0].clientY;
         carouselProgress += dy * 0.005;
         cTouchStart = e.touches[0].clientY;
-      }
-    }, { passive: false });
+      }, { passive: false });
+    });
 
     function lerp(a, b, t) { return a + (b - a) * t; }
 
