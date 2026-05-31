@@ -403,31 +403,30 @@
       max-width: 900px;
       height: 460px;
       margin: 0 auto 2rem;
-      perspective: 1200px;
+      overflow: hidden;
+    }
+
+    .carousel3d-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .carousel3d-card {
-      position: absolute;
-      top: 50%;
-      left: 50%;
+      flex: 0 0 100%;
+      height: 100%;
+      padding: 0 10px;
+      box-sizing: border-box;
       border-radius: 8px;
       overflow: hidden;
-      background: #000;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      will-change: transform, opacity;
-      backface-visibility: hidden;
-      outline: 2px solid #000;
     }
 
     .carousel3d-card video {
-      display: block;
-      width: 500px;
-      height: 320px;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-    }
-
-    @media (max-width: 640px) {
-      .carousel3d-card video { width: 300px; height: 200px; }
+      display: block;
+      border-radius: 8px;
     }
 
     .carousel3d-controls {
@@ -575,7 +574,9 @@
       <h2 class="section-title">Gallery</h2>
       <p class="section-subtitle">Watch the traditional wood-pressing process in action</p>
       <div class="carousel3d" id="carousel3d">
-        <div class="carousel3d-stage" id="carouselStage"></div>
+        <div class="carousel3d-stage" id="carouselStage">
+          <div class="carousel3d-track" id="carouselTrack"></div>
+        </div>
         <div class="carousel3d-controls">
           <button class="carousel3d-arrow" id="carouselPrev">&#10094;</button>
           <span class="carousel3d-counter" id="carouselCounter">1 / 8</span>
@@ -678,66 +679,26 @@
     const CA = carouselVideos.length;
     let carouselIndex = 0;
 
-    const carouselStage = document.getElementById("carouselStage");
+    const carouselTrack = document.getElementById("carouselTrack");
     const carouselCounter = document.getElementById("carouselCounter");
-
-    const DEPTH = 280;
-    const SIDE_SCALE = 0.5;
-    const SIDE_ANGLE = 35;
-    const SIDE_OFFSET = 240;
 
     carouselVideos.forEach((src, i) => {
       const card = document.createElement("div");
       card.className = "carousel3d-card";
       card.innerHTML = `<video src="${src}" autoplay muted loop playsinline preload="auto"></video>`;
-      carouselStage.appendChild(card);
+      carouselTrack.appendChild(card);
     });
 
     carouselCounter.textContent = `1 / ${CA}`;
 
-    function playVideo(card) {
-      const v = card && card.querySelector("video");
-      if (v && v.paused) v.play().catch(() => {});
-    }
-
     function renderCarousel(animate) {
-      const cards = carouselStage.children;
-      const newCenter = carouselIndex;
-      const newLeft = (carouselIndex - 1 + CA) % CA;
-      const newRight = (carouselIndex + 1) % CA;
-
-      const t = animate ? "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease" : "none";
-
-      for (let i = 0; i < cards.length; i++) {
-        const c = cards[i];
-        c.style.transition = t;
-
-        if (i === newCenter) {
-          c.style.transform = "translate(-50%, -55%) translateZ(60px) scale(1)";
-          c.style.opacity = "1";
-          c.style.zIndex = "10";
-          c.style.pointerEvents = "auto";
-          playVideo(c);
-        } else if (i === newLeft) {
-          c.style.transform = `translate(-50%, -50%) translateX(${-SIDE_OFFSET}px) translateZ(${-DEPTH}px) scale(${SIDE_SCALE}) rotateY(${SIDE_ANGLE}deg)`;
-          c.style.opacity = "1";
-          c.style.zIndex = "5";
-          c.style.pointerEvents = "none";
-          playVideo(c);
-        } else if (i === newRight) {
-          c.style.transform = `translate(-50%, -50%) translateX(${SIDE_OFFSET}px) translateZ(${-DEPTH}px) scale(${SIDE_SCALE}) rotateY(${-SIDE_ANGLE}deg)`;
-          c.style.opacity = "1";
-          c.style.zIndex = "5";
-          c.style.pointerEvents = "none";
-          playVideo(c);
-        } else {
-          const side = i < newCenter ? -1 : 1;
-          c.style.transform = `translate(calc(-50% + ${side * 600}px), -50%) translateZ(-800px) scale(0.2)`;
-          c.style.opacity = "0";
-          c.style.zIndex = "0";
-          c.style.pointerEvents = "none";
-        }
+      const track = carouselTrack;
+      if (animate) {
+        track.style.transition = "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)";
+      } else {
+        track.style.transition = "none";
       }
+      track.style.transform = `translateX(-${carouselIndex * 100}%)`;
     }
 
     renderCarousel(false);
