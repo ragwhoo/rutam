@@ -418,20 +418,17 @@
 
     .carousel-inner {
       position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 0;
-      height: 0;
+      inset: 0;
+      perspective: 3000px;
       transform-style: preserve-3d;
       transform: rotateY(-14deg) rotateX(-6deg);
     }
 
     .carousel-card {
       position: absolute;
-      left: 0;
-      top: 0;
+      left: 50%;
+      top: 50%;
       transform-style: preserve-3d;
-      pointer-events: none;
       overflow: hidden;
       border-radius: 4px;
     }
