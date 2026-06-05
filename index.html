@@ -517,7 +517,7 @@
     <div class="container">
       <h2 class="section-title">Our Oils</h2>
       <p class="section-subtitle">Wood cold-pressed using traditional Marachekku machines — unbleached, unrefined and full of goodness.</p>
-      <div class="products-grid">
+      <div class="products-grid" id="productsGrid">
         <div class="product-card">
           <img class="product-img" src="groundnut.jpeg" alt="Groundnut Oil">
           <h3>Groundnut Oil</h3>
@@ -593,7 +593,7 @@
     <div class="container">
       <h2 class="section-title">Health Benefits</h2>
       <p class="section-subtitle">Wood cold-pressed oils are richer in nutrients that support total wellness.</p>
-      <div class="benefits-grid">
+      <div class="benefits-grid" id="benefitsGrid">
         <div class="benefit-item">
           <h4>Antioxidants &amp; Vitamin E</h4>
           <p>Rich in natural antioxidants and Vitamin E that protect cells from oxidative damage.</p>
@@ -675,11 +675,11 @@
     }
   </script>
   <script>
-    const carouselVideos = [
+    let carouselVideos = [
       "bestvideosofar.mp4", "bettervideo.mp4", "video1.mp4", "video2.mp4",
       "video3.mp4", "video4.mp4", "machine video.mp4", "videos.mp4"
     ];
-    const CA = carouselVideos.length;
+    let CA = carouselVideos.length;
 
     const carouselStage = document.getElementById("carouselStage");
     const carouselTrack = document.getElementById("carouselTrack");
@@ -698,6 +698,90 @@
     const REAL7 = REAL0 + CA - 1;
     let cur = REAL0;
     carouselCounter.textContent = `1 / ${CA}`;
+
+    async function loadContent() {
+      try {
+        const [aboutRes, productsRes, benefitsRes, galleryRes, contactRes] = await Promise.all([
+          fetch('/content/about.json').then(r => r.ok ? r.json() : null),
+          fetch('/content/products.json').then(r => r.ok ? r.json() : null),
+          fetch('/content/benefits.json').then(r => r.ok ? r.json() : null),
+          fetch('/content/gallery.json').then(r => r.ok ? r.json() : null),
+          fetch('/content/contact.json').then(r => r.ok ? r.json() : null),
+        ]);
+
+        if (aboutRes) {
+          const subtitle = document.querySelector('#about .section-subtitle');
+          if (subtitle) subtitle.textContent = aboutRes.subtitle;
+          const storyEl = document.querySelector('#about .about-text');
+          if (storyEl && aboutRes.storyText) {
+            const paragraphs = aboutRes.storyText.split('\n\n').filter(p => p.trim());
+            const pEls = storyEl.querySelectorAll('p');
+            paragraphs.forEach((text, i) => {
+              if (pEls[i]) pEls[i].textContent = text;
+            });
+          }
+          const aboutVideo = document.querySelector('.about-video');
+          if (aboutVideo && aboutRes.videoSrc) aboutVideo.src = aboutRes.videoSrc;
+        }
+
+        if (productsRes && Array.isArray(productsRes)) {
+          const grid = document.getElementById('productsGrid');
+          if (grid) {
+            grid.innerHTML = productsRes.map(p => `
+              <div class="product-card">
+                <img class="product-img" src="${p.image || ''}" alt="${p.name || ''}" loading="lazy">
+                <h3>${p.name || ''}</h3>
+                <p>${p.description || ''}</p>
+              </div>
+            `).join('');
+          }
+        }
+
+        if (benefitsRes && Array.isArray(benefitsRes)) {
+          const grid = document.getElementById('benefitsGrid');
+          if (grid) {
+            grid.innerHTML = benefitsRes.map(b => `
+              <div class="benefit-item">
+                <h4>${b.title || ''}</h4>
+                <p>${b.description || ''}</p>
+              </div>
+            `).join('');
+          }
+        }
+
+        if (galleryRes && Array.isArray(galleryRes)) {
+          carouselVideos.length = 0;
+          galleryRes.forEach(v => carouselVideos.push(v));
+          CA = carouselVideos.length;
+          const cards = carouselTrack.querySelectorAll('.carousel3d-card');
+          const totalCards = CA + 6;
+          for (let i = 0; i < cards.length && i < totalCards; i++) {
+            const srcIndex = ((i - 3) % CA + CA) % CA;
+            const video = cards[i].querySelector('video');
+            if (video) {
+              video.src = carouselVideos[srcIndex];
+              video.load();
+              video.play().catch(() => {});
+            }
+          }
+        }
+
+        if (contactRes) {
+          const phoneLink = document.querySelector('a[href^="tel:"]');
+          const emailLink = document.querySelector('a[href^="mailto:"]');
+          if (phoneLink && contactRes.phone) {
+            phoneLink.href = `tel:${contactRes.phone.replace(/[^0-9+]/g, '')}`;
+            phoneLink.textContent = contactRes.phone;
+          }
+          if (emailLink && contactRes.email) {
+            emailLink.href = `mailto:${contactRes.email}`;
+            emailLink.textContent = contactRes.email;
+          }
+        }
+      } catch (e) {
+        console.log('Content load failed, using fallback');
+      }
+    }
 
     function renderCarousel(animate) {
       const first = carouselTrack.children[0];
@@ -767,6 +851,8 @@
         updateNav();
       }
     });
+
+    loadContent();
   </script>
 </body>
 </html>
