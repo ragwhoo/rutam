@@ -1,9 +1,5 @@
-# Change repo to your client's repo when you create it, e.g.: client-account/rutam-oils
 backend:
-  name: github
-  repo: ragwhoo/rutam
-  branch: main
-  base_url: https://oauth.decapcms.org
+  name: test-repo
 
 publish_mode: editorial_workflow
 media_folder: "static/uploads"
@@ -12,72 +8,77 @@ public_folder: "/static/uploads"
 collections:
   - name: "about"
     label: "About Section"
-    folder: "content"
-    create: false
     format: "json"
-    slug: "about"
     editor:
       preview: false
-    fields:
-      - { label: "Subtitle", name: "subtitle", widget: "string" }
-      - { label: "Story Text", name: "storyText", widget: "markdown" }
-      - { label: "About Video", name: "videoSrc", widget: "string" }
+    files:
+      - name: "about"
+        label: "About Content"
+        file: "content/about.json"
+        fields:
+          - { label: "Subtitle", name: "subtitle", widget: "string" }
+          - { label: "Story Text", name: "storyText", widget: "markdown" }
+          - { label: "About Video", name: "videoSrc", widget: "string" }
 
   - name: "products"
     label: "Products"
-    folder: "content"
-    create: false
     format: "json"
-    slug: "products"
     editor:
       preview: false
-    fields:
-      - label: "Product List"
-        name: "body"
-        widget: "list"
+    files:
+      - name: "products"
+        label: "Product List"
+        file: "content/products.json"
         fields:
-          - { label: "Image", name: "image", widget: "image", media_folder: "", public_folder: "" }
-          - { label: "Name", name: "name", widget: "string" }
-          - { label: "Description", name: "description", widget: "text" }
+          - label: "Product List"
+            name: "body"
+            widget: "list"
+            fields:
+              - { label: "Image", name: "image", widget: "image", media_folder: "", public_folder: "" }
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
 
   - name: "benefits"
     label: "Health Benefits"
-    folder: "content"
-    create: false
     format: "json"
-    slug: "benefits"
     editor:
       preview: false
-    fields:
-      - label: "Benefit Cards"
-        name: "body"
-        widget: "list"
+    files:
+      - name: "benefits"
+        label: "Benefit Cards"
+        file: "content/benefits.json"
         fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Description", name: "description", widget: "text" }
+          - label: "Benefit Cards"
+            name: "body"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
 
   - name: "gallery"
     label: "Gallery Videos"
-    folder: "content"
-    create: false
     format: "json"
-    slug: "gallery"
     editor:
       preview: false
-    fields:
-      - label: "Video File Paths"
-        name: "body"
-        widget: "list"
-        field: { label: "Video Path", name: "path", widget: "string" }
+    files:
+      - name: "gallery"
+        label: "Video File Paths"
+        file: "content/gallery.json"
+        fields:
+          - label: "Video File Paths"
+            name: "body"
+            widget: "list"
+            field: { label: "Video Path", name: "path", widget: "string" }
 
   - name: "contact"
     label: "Contact Info"
-    folder: "content"
-    create: false
     format: "json"
-    slug: "contact"
     editor:
       preview: false
-    fields:
-      - { label: "Phone", name: "phone", widget: "string" }
-      - { label: "Email", name: "email", widget: "string" }
+    files:
+      - name: "contact"
+        label: "Contact Details"
+        file: "content/contact.json"
+        fields:
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
