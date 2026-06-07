@@ -2,9 +2,7 @@ backend:
   name: github
   repo: ragwhoo/rutam
   branch: main
-  base_url: https://github.com
   auth_endpoint: login/oauth/authorize
-  app_id: Ov23lig8AmNgTgyiiN0x
 
 publish_mode: editorial_workflow
 media_folder: "static/uploads"
