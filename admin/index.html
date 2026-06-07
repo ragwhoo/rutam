@@ -5,8 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rutam Oils — Admin</title>
   <meta name="robots" content="noindex" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #095d40;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 2rem;
+    }
+    .card {
+      background: rgba(243, 250, 220, 0.1);
+      padding: 3rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    p { font-size: 0.9rem; line-height: 1.6; opacity: 0.85; margin-bottom: 1.5rem; }
+    a { color: #f3fadc; }
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background: #f3fadc;
+      color: #095d40;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9rem;
+    }
+    .btn:hover { opacity: 0.85; }
+  </style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@3/dist/decap-cms.js"></script>
+  <div class="card" id="tokenPrompt">
+    <h1>Rutam Oils — Admin</h1>
+    <p>To log in, you need a GitHub personal access token with <strong>repo</strong> scope.</p>
+    <p>
+      <a href="https://github.com/settings/tokens/new?description=Rutam+CMS&scopes=repo" target="_blank">
+        Generate a token on GitHub
+      </a>
+    </p>
+    <p>After generating, paste it below:</p>
+    <input type="password" id="tokenInput" placeholder="ghp_..." style="width:100%;padding:0.75rem;margin-bottom:1rem;border:1px solid rgba(243,250,220,0.3);border-radius:4px;background:rgba(255,255,255,0.1);color:#fff;font-size:1rem;box-sizing:border-box" />
+    <button class="btn" onclick="saveToken()">Save &amp; Continue</button>
+  </div>
+
+  <script>
+    var existingToken = localStorage.getItem('github_token');
+
+    function saveToken() {
+      var token = document.getElementById('tokenInput').value.trim();
+      if (!token) { alert('Please paste your token.'); return; }
+      localStorage.setItem('github_token', token);
+      document.getElementById('tokenPrompt').style.display = 'none';
+      loadCMS();
+    }
+
+    function loadCMS() {
+      var script = document.createElement('script');
+      script.src = 'https://unpkg.com/decap-cms@3/dist/decap-cms.js';
+      document.body.appendChild(script);
+    }
+
+    if (existingToken) {
+      document.getElementById('tokenPrompt').style.display = 'none';
+      loadCMS();
+    }
+  </script>
 </body>
 </html>

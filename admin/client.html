@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="robots" content="noindex"></head>
+<body>
+<script>
+  var token = localStorage.getItem('github_token');
+  if (!token) {
+    token = prompt('Enter your GitHub personal access token (classic, with repo scope):');
+    if (token) {
+      localStorage.setItem('github_token', token);
+    }
+  }
+  if (token) {
+    window.opener.postMessage({ type: 'authorization:github:success', provider: 'github', token: token }, '*');
+  }
+  window.close();
+</script>
+</body>
+</html>

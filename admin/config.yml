@@ -2,8 +2,8 @@ backend:
   name: github
   repo: ragwhoo/rutam
   branch: main
-  auth_endpoint: login/oauth/authorize
-  app_id: Ov23lig8AmNgTgyiiN0x
+  base_url: https://rutam-kappa.vercel.app
+  auth_endpoint: admin/client.html
 
 publish_mode: editorial_workflow
 media_folder: "static/uploads"
