@@ -71,13 +71,6 @@
       justify-content: space-between;
       padding: 0 2.5rem;
       z-index: 100;
-      transition: background 0.3s, backdrop-filter 0.3s;
-    }
-
-    nav.scrolled {
-      background: rgba(9, 93, 64, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
     }
 
     .nav-logo {
@@ -832,12 +825,10 @@
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
-    const navEl = document.querySelector('nav');
     const navTextItems = document.querySelectorAll('.nav-logo, .nav-links a');
     const hamSpans = document.querySelectorAll('.hamburger span');
     function updateNav() {
       const scrolled = lenis.scroll > window.innerHeight - 64;
-      navEl.classList.toggle('scrolled', scrolled);
       navTextItems.forEach(el => el.style.color = scrolled ? '#f3fadc' : '#095d40');
       hamSpans.forEach(s => s.style.background = scrolled ? '#f3fadc' : '#095d40');
     }
