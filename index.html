@@ -25,10 +25,29 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --green: #095d40;
+      --green-dark: #06432e;
+      --green-light: #0d7a55;
+      --cream: #f3fadc;
+      --cream-dark: #e2edc0;
+      --warm: #c4956a;
+      --warm-light: #d4b08c;
+      --text: #ffffff;
+      --text-muted: rgba(255,255,255,0.7);
+      --radius: 0;
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 2rem;
+      --space-lg: 4rem;
+      --space-xl: 6rem;
+      --content-max: 1200px;
+    }
+
     body {
       font-family: 'Gotham', 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-      color: #ffffff;
-      background: #095d40;
+      color: var(--text);
+      background: var(--green);
       line-height: 1.8;
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -52,6 +71,13 @@
       justify-content: space-between;
       padding: 0 2.5rem;
       z-index: 100;
+      transition: background 0.3s, backdrop-filter 0.3s;
+    }
+
+    nav.scrolled {
+      background: rgba(9, 93, 64, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .nav-logo {
@@ -135,6 +161,15 @@
     .hero {
       height: 100vh;
       background: url('rutamhero.png') center center / cover no-repeat;
+      position: relative;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(9,93,64,0.35) 0%, rgba(6,67,46,0.6) 100%);
+      pointer-events: none;
     }
 
     .purity-section {
@@ -184,6 +219,18 @@
 
     section {
       padding: 6rem 2rem;
+    }
+
+    #about {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    #products {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    #gallery {
+      background: rgba(0, 0, 0, 0.06);
     }
 
     .container {
@@ -236,16 +283,8 @@
       border-radius: 4px;
       aspect-ratio: 4 / 3;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      font-size: 1rem;
-      font-weight: 300;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.7;
-      text-align: center;
       overflow: hidden;
       position: relative;
     }
@@ -326,7 +365,7 @@
     .benefit-item {
       padding: 2rem 1.5rem;
       background: #f3fadc;
-      color: #4169E1;
+      color: #2d4a3e;
     }
 
     .value-item p,
@@ -343,7 +382,7 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 1rem;
-      color: #4169E1;
+      color: var(--green-dark);
     }
 
     .cta {
@@ -360,11 +399,11 @@
 
     footer {
       text-align: center;
-      padding: 3rem 2rem;
+      padding: 4rem 2rem;
       font-size: 0.85rem;
       font-weight: 300;
-      opacity: 0.6;
-      border-top: 1px solid rgba(243, 250, 220, 0.15);
+      color: var(--text-muted);
+      border-top: 1px solid rgba(243, 250, 220, 0.12);
     }
 
     @media (max-width: 768px) {
@@ -802,12 +841,14 @@
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
+    const navEl = document.querySelector('nav');
     const navTextItems = document.querySelectorAll('.nav-logo, .nav-links a');
     const hamSpans = document.querySelectorAll('.hamburger span');
     function updateNav() {
-      const cream = lenis.scroll > window.innerHeight - 64;
-      navTextItems.forEach(el => el.style.color = cream ? '#f3fadc' : '#095d40');
-      hamSpans.forEach(s => s.style.background = cream ? '#f3fadc' : '#095d40');
+      const scrolled = lenis.scroll > window.innerHeight - 64;
+      navEl.classList.toggle('scrolled', scrolled);
+      navTextItems.forEach(el => el.style.color = scrolled ? '#f3fadc' : '#095d40');
+      hamSpans.forEach(s => s.style.background = scrolled ? '#f3fadc' : '#095d40');
     }
     lenis.on('scroll', updateNav);
 
