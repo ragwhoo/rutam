@@ -708,10 +708,10 @@
           if (aboutVideo && aboutRes.videoSrc) aboutVideo.src = aboutRes.videoSrc;
         }
 
-        if (productsRes && Array.isArray(productsRes)) {
+        if (productsRes && Array.isArray(productsRes.body)) {
           const grid = document.getElementById('productsGrid');
           if (grid) {
-            grid.innerHTML = productsRes.map(p => `
+            grid.innerHTML = productsRes.body.map(p => `
               <div class="product-card">
                 <img class="product-img" src="${p.image || ''}" alt="${p.name || ''}" loading="lazy">
                 <h3>${p.name || ''}</h3>
@@ -721,10 +721,10 @@
           }
         }
 
-        if (benefitsRes && Array.isArray(benefitsRes)) {
+        if (benefitsRes && Array.isArray(benefitsRes.body)) {
           const grid = document.getElementById('benefitsGrid');
           if (grid) {
-            grid.innerHTML = benefitsRes.map(b => `
+            grid.innerHTML = benefitsRes.body.map(b => `
               <div class="benefit-item">
                 <h4>${b.title || ''}</h4>
                 <p>${b.description || ''}</p>
@@ -733,9 +733,9 @@
           }
         }
 
-        if (galleryRes && Array.isArray(galleryRes)) {
+        if (galleryRes && Array.isArray(galleryRes.body)) {
           carouselVideos.length = 0;
-          galleryRes.forEach(v => carouselVideos.push(v));
+          galleryRes.body.forEach(v => carouselVideos.push(v));
           CA = carouselVideos.length;
           const cards = carouselTrack.querySelectorAll('.carousel3d-card');
           const totalCards = CA + 6;
