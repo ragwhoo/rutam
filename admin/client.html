@@ -6,14 +6,28 @@
   var token = localStorage.getItem('github_token');
   if (!token) {
     token = prompt('Enter your GitHub personal access token (classic, with repo scope):');
-    if (token) {
-      localStorage.setItem('github_token', token);
-    }
+    if (token) localStorage.setItem('github_token', token);
   }
+
   if (token) {
-    window.opener.postMessage({ type: 'authorization:github:success', provider: 'github', token: token }, '*');
+    var provider = 'github';
+    // Step 1: Send handshake to parent
+    window.opener.postMessage('authorizing:' + provider, '*');
+
+    // Step 2: Wait for parent to echo the handshake back
+    function listenForHandshake(e) {
+      if (e.data === 'authorizing:' + provider && e.source === window.opener) {
+        window.removeEventListener('message', listenForHandshake);
+        // Step 3: Send the token
+        var payload = JSON.stringify({ token: token });
+        window.opener.postMessage('authorization:' + provider + ':success:' + payload, '*');
+        setTimeout(function() { window.close(); }, 300);
+      }
+    }
+    window.addEventListener('message', listenForHandshake);
+  } else {
+    window.close();
   }
-  window.close();
 </script>
 </body>
 </html>
